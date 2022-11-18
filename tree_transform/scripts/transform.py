@@ -5,7 +5,7 @@ import rospkg
 import rospy
 import tf as transf
 from geometry_msgs.msg import PoseArray
-from tree_transform.srv import tree_transform as TransformResponse
+from tree_transform.srv import tree_transformResponse
 
 
 grapes_wrt_tag = PoseArray()
@@ -24,11 +24,11 @@ def transform_req(req):
         grapes_wrt_tag.poses.append(listener.transformPose(apriltag.header.frame_id,grapes_wrt_camera.poses[i]))
 
 
-    return TransformResponse(grapes_wrt_tag)
+    return tree_transformResponse(grapes_wrt_tag=grapes_wrt_tag)
 
 def tree_transf_server():
     rospy.init_node('tree_transform_node')
-    s = rospy.Service('tree_transf_srv', TransformResponse, transform_req)
+    s = rospy.Service('tree_transf_srv', tree_transformResponse, transform_req)
     rospy.spin()
 
 if __name__ == '__main__':
