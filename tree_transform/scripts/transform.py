@@ -1,13 +1,19 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # pub-sub node to transform detected object into tree reference frame
 
-import rospkg
-import rospy
-import tf as transf
-from data_fusion_node.msg import PoseArrayId
+
+# import tf as transf
+
+import sys
+print(sys.version)
+# tree_transform
+from tree_transform.srv import tree_transformService, tree_transformServiceResponse
+
+# from data_fusion_node.msg import PoseArrayId
 from apriltag_ros.msg import AprilTagDetectionArray
 from geometry_msgs.msg import PoseArray
-from tree_transform.srv import tree_transformService, tree_transformResponse
+import rospkg
+import rospy
 
 
 
@@ -30,12 +36,12 @@ def transform_req(req):
         grapes_wrt_tag_t.poses.append(listener.transformPose(apriltag.header.frame_id,grapes_wrt_camera.poses[i]))
 
     rospy.logwarn("AQUI 2")
-    return tree_transformResponse(grapes_wrt_tag=grapes_wrt_tag_t)
+    return  tree_transformServiceResponse(grapes_wrt_tag=grapes_wrt_tag_t)
 
 def tree_transf_server():
     rospy.init_node('tree_transform_node', anonymous=True)
     rospy.logwarn("AQUI Marco")
-    s = rospy.Service('tree_transf_srv', tree_transformService, transform_req)
+    s = rospy.Service('tree_transf_srv',  tree_transformService, transform_req)
     rospy.spin()
 
 if __name__ == '__main__':
