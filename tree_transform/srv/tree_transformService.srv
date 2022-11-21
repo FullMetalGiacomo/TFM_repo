@@ -1,4 +1,4 @@
 apriltag_ros/AprilTagDetectionArray tag
 geometry_msgs/PoseArray detection
 ---
-geometry_msgs/PoseArray detection_res
+tree_transform/PoseStampedArray detection_res
