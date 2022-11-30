@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from std_msgs.msg import String
+from geometry_msgs import PointStamped
 from tree_transform.msg import PoseStampedArray,PoseStampedCustom # importing custom message PoseStampedArray
 from tree_transform.srv import tree_transformService, tree_transformServiceResponse # importing the srv file top and bottom
 from data_fusion_node.msg import PoseArrayId # importing custom message of Grapes pose arrays
@@ -155,6 +156,36 @@ def publish_poses():
 
     poses_pub.publish(poses_df)
 
+    def get_point(tag_Id):
+        # recieve tag number
+        #tag_string= "tag_"+str(tag_Id)
+        point = PointStamped()
+        df_get_point= pd.read_csv("tree_transform/poses_dataframe.csv",index_col=0) # gets df
+        # gets df of tree Id ( already ordered from distmin to distmax)
+        df_tree_get_point = df_get_point.loc[df_get_point['Id'] == tag_Id]
+        print(df_tree_get_point.to_string())
+        point = PointStamped()
+        i=0;
+        # if the time value of the first one is zero (dummy grape), we pass to the second
+        if df_tree_get_point[i,10] == 0:
+            i=1
+
+        # point.tag = df_tree_get_point[i,1]
+        # point.dist = df_tree_get_point[i,2]
+        point.pose.header.stamp.secs = df_tree_get_point[i,10]
+        point.pose.header.frame_id = df_tree_get_point[i,0]
+        point.pose.pose.position.x = df_tree_get_point[i,3]
+        point.pose.pose.position.y = df_tree_get_point[i,4]
+        point.pose.pose.position.z = df_tree_get_point[i,5]
+        # point.pose.pose.orientation.x = df_tree_get_point[i,6]
+        # point.pose.pose.orientation.y = df_tree_get_point[i,7]
+        # point.pose.pose.orientation.z = df_tree_get_point[i,8]
+        # point.pose.pose.orientation.w = df_tree_get_point[i,9]
+
+        return point
+
+
+
 
 def main():
     while not rospy.is_shutdown():
@@ -165,9 +196,10 @@ def main():
 	 handler.load_database()
 	 try:
    	 	poses_detected = get_tree_transf_client(handler)
-	 except:
     # rospy.loginfo("these are the poses")
     # rospy.loginfo(poses_detected)
+	 except:
+
    	 	publish_poses()
     # poses = rospy.Subscriber("/PoseStampedArray", PoseStampedArray, subscriber_callback)
 
