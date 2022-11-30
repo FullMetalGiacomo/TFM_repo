@@ -6,7 +6,6 @@ import rospkg
 from tree_transform.srv import tree_transformService, tree_transformServiceResponse # importing the srv file top and bottom
 from data_fusion_node.msg import PoseArrayId # importing custom message of Grapes pose arrays
 from apriltag_ros.msg import AprilTagDetectionArray # importing the custom message of apriltags
-import message_filters
 
 
 def get_tree_transf_client():
@@ -30,4 +29,3 @@ def get_tree_transf_client():
 if __name__ == "__main__":
     rospy.init_node('tree_transform_client') # initializing client
     get_tree_transf_client()
-
