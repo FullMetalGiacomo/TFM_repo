@@ -208,7 +208,8 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_install_python(PROGRAMS scripts/transform.py
+catkin_install_python(PROGRAMS scripts/transform_service_node.py
   scripts/tree_transf_client.py
+  scripts/database_handler_node.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

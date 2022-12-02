@@ -18,11 +18,11 @@ class Database_handler(object):
     def load_database(self):
         #self.df = pd.read_csv("tree_transform/dataframe_grapes_test_empty.csv") # decomment this to delete the csv
         self.df = pd.read_csv("tree_transform/poses_dataframe.csv",index_col=0)
-	print("showing current database :")
+        rospy.loginfo("Showing loaded database :")
         print(self.df.to_string())
 
     def update_database(self,poses_detected):
-        rospy.loginfo("updating database")
+        rospy.loginfo("Updating database")
         for i in range(len(poses_detected.detection_res.poses)):
 
             id= poses_detected.detection_res.poses[i].tag
@@ -82,7 +82,8 @@ class Database_handler(object):
             #print("adding column ddist")
             #print(self.df_tree_dist)
             # takes the cleaned tree
-            self.df_tree_clean=self.df_tree.loc[(self.df_tree_dist["ddist"]<-0.15) | (self.df_tree_dist["ddist"]>0.15)]
+            self.df_tree_clean=self.df_tree.loc[(self.df_tree_dist["ddist"]<-0.10) | (self.df_tree_dist["ddist"]>0.10)]
+            #self.df_tree_clean=self.df_tree_clean.drop[((self.df_tree_clean["positionx"]>-0.10) and (self.df_tree_clean["positionx"]<0.10)) and ((self.df_tree_clean["positiony"]>0.075) and (self.df_tree_clean["positiony"]<0.225)) and ((self.df_tree_clean["positionz"]>-0.010) and (self.df_tree_clean["positionz"]<0.010))]
             #print("removing the distances")
             #print(self.df_tree_clean)
             self.df_clean=pd.concat([self.df_clean, self.df_tree_clean])
@@ -105,10 +106,10 @@ class Database_handler(object):
 
 
 def get_tree_transf_client(handler):
-    print("searching service")
+    rospy.loginfo("Searching for service ...")
     rospy.wait_for_service('tree_transf_srv',5.0) # wait for service to be available, frquence of node is set here!!
     try:
-        rospy.logwarn("here") # service is available
+        rospy.loginfo("Service found") # service is available
         client_handle = rospy.ServiceProxy('tree_transf_srv', tree_transformService) # calling the service that we want to call
         detections=rospy.wait_for_message("/poses_pfc", PoseArrayId) # we wait for the PoseArrayID message
         tag=rospy.wait_for_message("/tag_detections", AprilTagDetectionArray) # we wait for AprilTagDetectionArray message
@@ -119,10 +120,11 @@ def get_tree_transf_client(handler):
         # rospy.logwarn("here 2")
         # rospy.logwarn(response1)
         rospy.loginfo("Service called correctly")
-	#handler.update_database(poses_detected)
-	handler.update_database(response1)
-    	handler.clean_database()
-   	handler.upload_database()
+        #handler.update_database(poses_detected)
+        handler.update_database(response1)
+        handler.clean_database()
+        handler.upload_database()
+
         return response1
     except rospy.ServiceException as e:
         rospy.logerr("Service call failed: %s"%e)
@@ -145,7 +147,7 @@ def publish_poses():
         pose_df.dist = df[i,2] # grape distance
         pose_df.pose.header.stamp.secs = df[i,10] # timestamp
         pose_df.pose.header.frame_id = df[i,0] # frame_id tag_xx
-        pose_df.pose.pose.position.x = df[i,3] 
+        pose_df.pose.pose.position.x = df[i,3]
         pose_df.pose.pose.position.y = df[i,4]
         pose_df.pose.pose.position.z = df[i,5]
         pose_df.pose.pose.orientation.x = df[i,6]
@@ -166,7 +168,7 @@ def get_point(tag_Id): # gets as input the Id of the tag and returnes a PointSta
     # print("##############################")
     # print(df_tree_get_point.to_string())
     point = PointStamped()
-    i=0;
+    i=0
     # if the time value of the first one is zero (dummy grape), we pass to the second
     if df_tree_get_point['time'].iloc[i] == 0:
         i=1
