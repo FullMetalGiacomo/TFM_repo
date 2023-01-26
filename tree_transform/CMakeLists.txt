@@ -59,6 +59,12 @@ add_message_files(
 add_service_files(
   FILES
   tree_transformService.srv
+  database_manager_clean.srv
+  database_manager_load.srv
+  database_manager_update.srv
+  database_manager_get_poses.srv
+  database_manager_upload.srv
+
 )
 
 ## Generate actions in the 'action' folder
